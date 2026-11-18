@@ -68,3 +68,16 @@ if __name__ == "__main__":
     gdf = get_my_stations()
     write_latest(ds, gdf)
     print(f"Wrote {ds.sizes['time']} days for {ds.sizes['station']} stations to latest/")
+
+    # for t in TRIPLETS:
+    #     for el in ELEMENTS:
+    #         try:
+    #             sp.fetch_snotel(
+    #                 stations=[t],
+    #                 elements=[el],
+    #                 duration=DURATION,
+    #                 start_date=get_this_water_year(),
+    #                 end_date=date.today().isoformat(),
+    #             )
+    #         except KeyError:
+    #             print("FAILED:", t, el)

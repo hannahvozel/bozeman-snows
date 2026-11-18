@@ -13,7 +13,6 @@ TRIPLETS = [
     "635:MT:SNTL",   # Monument Peak
     "480:MT:SNTL",   # Fisher Creek (Cooke City)
     "862:MT:SNTL",   # White Mill (Cooke City)
-    "670:MT:SNTL",   # Northeast Entrance (Cooke City)
 ]
 
 # Common element codes to pull in 
