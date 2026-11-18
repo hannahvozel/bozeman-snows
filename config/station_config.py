@@ -29,9 +29,6 @@ ELEMENTS = [
 # Desired Duration
 DURATION = "DAILY" # Can also be DAILY, HOURLY, SEMIMONTHLY, MONTHLY, CALENDAR_YEAR, WATER_YEAR
 
-# START DATE
-START_DATE = "2025-10-01" # Best practice to start at beginning of a water year, but up to the user
-
 # Hydrologic Unit Codes (TBD if needed)
 HUC8S = [
     "10020005",  # Jefferson River (Albro Lake, via South Willow Creek)

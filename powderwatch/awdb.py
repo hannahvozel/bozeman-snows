@@ -1,7 +1,12 @@
-"""Minimal client for the AWDB Rest API
+"""Fetch data from the AWDB Rest API via snotelpy
 
 Docs: https://wcc.sc.egov.usda.gov/awdbRestApi/swagger-ui/index.html
 """
+
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import os
 import xarray as xr
@@ -10,8 +15,14 @@ import pandas as pd
 import geopandas as gpd
 import json
 import xarray as xr
-from config.station_config import TRIPLETS, ELEMENTS, DURATION, START_DATE, HUC8S
-from datetime import date
+from config.station_config import TRIPLETS, ELEMENTS, DURATION, HUC8S
+from datetime import date, datetime, timezone
+
+# Get start of this current water year
+def get_this_water_year(today=None):
+    today = today or date.today()
+    year = today.year if today.month >= 10 else today.year - 1
+    return date(year, 10, 1).isoformat()
 
 
 # What do we want?:
@@ -24,7 +35,7 @@ def fetch_my_snotels():
     stations=TRIPLETS,
     elements=ELEMENTS,
     duration=DURATION,
-    start_date=START_DATE,
+    start_date=get_this_water_year(),
     end_date=date.today().isoformat()
     )
     return ds
@@ -42,3 +53,18 @@ def get_my_stations():
 def ds_to_json(ds, path):
     """Save an xarray Dataset as JSON: one record per station per day."""
     ds.to_dataframe().reset_index().to_json(path, orient="records", date_format="iso")
+
+# Save to the latest folder
+def write_latest(ds, gdf=None):
+    Path("latest").mkdir(exist_ok=True)
+    # Handle the core metrics
+    ds_to_json(ds, "latest/snotel.json")
+    # Save stations for mapping
+    if gdf is not None:
+        gdf.to_file("latest/stations.geojson", driver="GeoJSON")
+
+if __name__ == "__main__":
+    ds = fetch_my_snotels()
+    gdf = get_my_stations()
+    write_latest(ds, gdf)
+    print(f"Wrote {ds.sizes['time']} days for {ds.sizes['station']} stations to latest/")
