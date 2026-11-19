@@ -1,0 +1,35 @@
+name: Update snow data
+
+on:
+  schedule:
+    - cron: "45 4 * * *"          # 4:45 am every day
+      timezone: "America/Denver"  # Mountain Time, adjusts for daylight saving
+  workflow_dispatch:              # adds a "Run workflow" button for manual runs
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies from pyproject.toml
+        run: |
+          python -c "import tomllib; print('\n'.join(tomllib.load(open('pyproject.toml','rb'))['project'].get('dependencies', [])))" > /tmp/requirements.txt
+          pip install -r /tmp/requirements.txt
+
+      - run: python update.py
+
+      - name: Commit new data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add powderwatch/latest
+          git diff --cached --quiet || git commit -m "Update SNOTEL data"
+          git push
