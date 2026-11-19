@@ -27,7 +27,7 @@ const shade = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/
 
 shade.addTo(map);
 
-/* Add range names to the tinted map */
+/* Add range names to the tinted map (and a few towns so we can locate ourselves..) */
 const ranges = [
   { name: "Bridger Range",      lat: 45.85, lng: -110.93 },
   { name: "Gallatin Range",     lat: 45.30, lng: -110.95 },
@@ -36,7 +36,14 @@ const ranges = [
   { name: "Tobacco Root Mtns",  lat: 45.55, lng: -111.95 },
   { name: "Absaroka Range",     lat: 45.30, lng: -110.45 },
   { name: "Crazy Mountains",    lat: 46.10, lng: -110.30 },
-  { name: "Big Belt Mtns",      lat: 46.40, lng: -111.35 }
+  { name: "Big Belt Mtns",      lat: 46.40, lng: -111.35 },
+];
+
+const towns = [
+  { name: "Bozeman",          lat: 45.6770, lng: -111.0429 },
+  { name: "Big Sky",          lat: 45.2847, lng: -111.3683 },
+  { name: "Cooke City",       lat: 45.0202, lng: -109.9335 },
+  { name: "West Yellowstone", lat: 44.6621, lng: -111.1041 }
 ];
 
 const rangeLabels = L.layerGroup(ranges.map(r =>
@@ -45,6 +52,13 @@ const rangeLabels = L.layerGroup(ranges.map(r =>
     icon: L.divIcon({ className: "range-label", html: `<span>${r.name}</span>`, iconSize: null })
   })
 )).addTo(map);
+
+const townLabels = L.layerGroup(towns.map(r =>
+  L.marker([r.lat, r.lng], {
+    interactive: false,
+    icon: L.divIcon({ className: "town-label", html: `<span>${r.name}</span>`, iconSize: null })
+  })
+)).addTo(map)
 
 const places = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
   attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
