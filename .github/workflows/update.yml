@@ -2,7 +2,7 @@ name: Update snow data
 
 on:
   schedule:
-    - cron: "45 4 * * *"          # 4:45 am every day
+    - cron: "45 * * * *"          # 4:45 am every day
       timezone: "America/Denver"  # Mountain Time, adjusts for daylight saving
   workflow_dispatch:              # adds a "Run workflow" button for manual runs
 
