@@ -1,0 +1,5 @@
+/* icy blue */
+.shade-tint { filter: sepia(1) hue-rotate(170deg) saturate(2.5) brightness(1.05); }
+
+/* forest green */
+.shade-tint { filter: sepia(1) hue-rotate(70deg) saturate(2) brightness(0.95); }
