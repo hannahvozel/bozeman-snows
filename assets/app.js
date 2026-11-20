@@ -186,7 +186,8 @@ function showStation(props, snotelRows) {
       x: 0.5,
       xanchor: "center"
     },
-    yaxis: { title: { text: "inches" } },
+    xaxis: { gridcolor: "rgba(29, 53, 87, .12)" },
+    yaxis: { title: { text: "inches" }, gridcolor: "rgba(29, 53, 87, .12)" },
     paper_bgcolor: "rgba(0,0,0,0)",
     plot_bgcolor: "rgba(0,0,0,0)"
   });

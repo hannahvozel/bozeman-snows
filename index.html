@@ -223,6 +223,12 @@
       }
 
       #precip-chart { max-width: 1100px; margin: 1rem auto 2rem; }
+      #precip-chart:not(:empty) {
+        background: var(--frost);
+        border-left: 5px solid var(--lingon);
+        border-radius: 6px;
+        padding: .5rem;
+      }
 
       @media (max-width: 600px) {
         .content { margin: 0 12px; }
