@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+OUT_DIR = Path(__file__).resolve().parent / "latest"
 
 import os
 import xarray as xr
@@ -56,12 +57,12 @@ def ds_to_json(ds, path):
 
 # Save to the latest folder
 def write_latest(ds, gdf=None):
-    Path("latest").mkdir(exist_ok=True)
+    OUT_DIR.mkdir(exist_ok=True)
     # Handle the core metrics
-    ds_to_json(ds, "latest/snotel.json")
+    ds_to_json(ds, OUT_DIR / "snotel.json")
     # Save stations for mapping
     if gdf is not None:
-        gdf.to_file("latest/stations.geojson", driver="GeoJSON")
+        gdf.to_file(OUT_DIR / "stations.geojson", driver="GeoJSON")
 
 if __name__ == "__main__":
     ds = fetch_my_snotels()
