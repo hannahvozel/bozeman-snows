@@ -151,7 +151,7 @@ function showStation(props, snotelRows) {
     .sort((a, b) => a.time.localeCompare(b.time));
 
   const first = rows[0];                    // Oct 1
-  const latest = rows.sort((a, b) => a.time.localeCompare(b.time));     // most recent day
+  const latest = rows[rows.length - 1];     // most recent day 
   const dayBefore = rows[rows.length - 2];
 
   const precip24 = Math.max(0, latest.PREC - dayBefore.PREC);
