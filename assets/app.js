@@ -24,6 +24,9 @@ const relief = L.tileLayer('https://basemap.nationalmap.gov/arcgis/rest/services
   attribution: 'USGS Shaded Relief'
 });
 
+/* Add init layer */
+relief.addTo(map); 
+
 /* Add range names to the tinted map (and a few towns so we can locate ourselves..) */
 const ranges = [
   { name: "Bridger Range",      lat: 45.85, lng: -110.93 },
