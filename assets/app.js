@@ -1,3 +1,4 @@
+/* Load in latest json*/ 
 const snotelReady = fetch("./powderwatch/latest/snotel.json", { cache: "no-store" })
   .then(r => {
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
@@ -8,16 +9,13 @@ const snotelReady = fetch("./powderwatch/latest/snotel.json", { cache: "no-store
     return null;
   });
 
-
+/* Init map */
 const map = L.map("map").setView([45.4, -111], 14);
 
+/* Base layers for leaflet */
 const usgs = L.tileLayer('https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}', {
   maxZoom: 16,
   attribution: 'USGS The National Map'
-});
-
-const esri = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
-  attribution: 'Tiles &copy; Esri'
 });
 
 const relief = L.tileLayer('https://basemap.nationalmap.gov/arcgis/rest/services/USGSShadedReliefOnly/MapServer/tile/{z}/{y}/{x}', {
@@ -25,13 +23,6 @@ const relief = L.tileLayer('https://basemap.nationalmap.gov/arcgis/rest/services
   opacity: 0.4,
   attribution: 'USGS Shaded Relief'
 });
-
-const shade = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}', {
-  className: 'shade-tint',
-  attribution: 'Tiles &copy; Esri'
-});
-
-shade.addTo(map);
 
 /* Add range names to the tinted map (and a few towns so we can locate ourselves..) */
 const ranges = [
@@ -52,6 +43,7 @@ const towns = [
   { name: "West Yellowstone", lat: 44.6621, lng: -111.1041 }
 ];
 
+/* Set up range labels*/ 
 const rangeLabels = L.layerGroup(ranges.map(r =>
   L.marker([r.lat, r.lng], {
     interactive: false,
@@ -59,6 +51,7 @@ const rangeLabels = L.layerGroup(ranges.map(r =>
   })
 )).addTo(map);
 
+/* Set up town labels*/ 
 const townLabels = L.layerGroup(towns.map(r =>
   L.marker([r.lat, r.lng], {
     interactive: false,
@@ -66,14 +59,10 @@ const townLabels = L.layerGroup(towns.map(r =>
   })
 )).addTo(map)
 
-const places = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
-  attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
-});
-
 /* Layers */ 
 L.control.layers(
-  { 'Shaded (tinted)': shade, 'USGS topo': usgs, 'Esri topo': esri },
-  { 'Mountain ranges': rangeLabels, 'Towns & places': places, 'Extra hillshade': relief }
+  { 'Shaded (tinted)': relief, 'USGS topo': usgs},
+  { 'Mountain ranges': rangeLabels}
 ).addTo(map);
 
 const stationIndex = {};   // triplet -> { props, marker }
@@ -100,6 +89,7 @@ const stationsReady = fetch("./powderwatch/latest/stations.geojson")
     map.fitBounds(stations.getBounds());
   });
 
+  /* Set up a card for the deepest snow! */
 const DeepestCard = L.Control.extend({
   options: { position: "bottomleft" },
   onAdd() {
@@ -172,6 +162,7 @@ function showStation(props, snotelRows) {
 
   const ink = getComputedStyle(document.documentElement).getPropertyValue("--ink").trim();
 
+  /* Snow depth chart */
   Plotly.newPlot("precip-chart", [{
     x: rows.map(row => row.time),
     y: rows.map(row => row.SNWD),
