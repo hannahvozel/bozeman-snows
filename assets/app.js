@@ -70,6 +70,9 @@ L.control.layers(
 
 const stationIndex = {};   // triplet -> { props, marker }
 
+/* Set a home base */
+let homeBounds = null;   // the "fit all stations" view, set once stations load
+
 const stationsReady = fetch("./powderwatch/latest/stations.geojson")
   .then(response => response.json())
   .then(geojson => {
@@ -89,7 +92,8 @@ const stationsReady = fetch("./powderwatch/latest/stations.geojson")
       }
     }).addTo(map);
 
-    map.fitBounds(stations.getBounds());
+    homeBounds = stations.getBounds();
+    map.fitBounds(homeBounds);
   });
 
   /* Set up a card for the deepest snow! */
@@ -104,6 +108,28 @@ const DeepestCard = L.Control.extend({
   }
 });
 const deepestCard = new DeepestCard().addTo(map);
+
+/* Re-center button: zooms back out to show all stations */
+const HomeButton = L.Control.extend({
+  options: { position: "topleft" },
+  onAdd() {
+    const bar = L.DomUtil.create("div", "leaflet-bar");
+    const btn = L.DomUtil.create("a", "home-button", bar);
+    btn.href = "#";
+    btn.innerHTML = "⌂";
+    btn.title = "Re-center map";
+    btn.setAttribute("role", "button");
+    btn.setAttribute("aria-label", "Re-center map");
+
+    L.DomEvent.disableClickPropagation(bar);
+    L.DomEvent.on(btn, "click", e => {
+      L.DomEvent.preventDefault(e);
+      if (homeBounds) map.flyToBounds(homeBounds, { duration: 0.8 });
+    });
+    return bar;
+  }
+});
+new HomeButton().addTo(map);
 
 Promise.all([snotelReady, stationsReady]).then(([rows]) => {
   // Most recent row with a snow depth reading, per station

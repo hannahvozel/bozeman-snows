@@ -110,6 +110,12 @@ h2 { font-size: 2.5rem; text-align: center; margin: 1.6rem 16px .6rem; }
 .leaflet-tooltip-left:before   { border-left-color: var(--ink); }
 .leaflet-tooltip-right:before  { border-right-color: var(--ink); }
 
+.home-button {
+  font-size: 18px;
+  line-height: 30px;
+  text-align: center;
+}
+
 .range-label span {
   display: block;
   transform: translate(-50%, -50%);
