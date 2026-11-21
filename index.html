@@ -7,246 +7,7 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='12' fill='%231d3557'/><g stroke='%23f5f8fb' stroke-width='3' stroke-linecap='round' fill='none'><g id='a'><path d='M32 32V9M32 17l-6-5M32 17l6-5M32 25l-4-3M32 25l4-3'/></g><use href='%23a' transform='rotate(60 32 32)'/><use href='%23a' transform='rotate(120 32 32)'/><use href='%23a' transform='rotate(180 32 32)'/><use href='%23a' transform='rotate(240 32 32)'/><use href='%23a' transform='rotate(300 32 32)'/></g><circle cx='32' cy='32' r='3' fill='%23c8323c'/></svg>">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link href="https://fonts.googleapis.com/css2?family=Iceland&family=Barlow:wght@400;500;700&display=swap" rel="stylesheet">
-  <style>
-      /* ---------- Palette: snow, glacier ice, fjord night, lingonberry red ---------- */
-      :root {
-        --snow:    #f5f8fb;   /* page background */
-        --frost:   #e2ecf4;   /* panels, map background */
-        --glacier: #9cc3de;   /* light accent */
-        --ink:     #1d3557;   /* main text; also used by the Plotly chart line */
-        --night:   #0f2136;   /* masthead */
-        --lingon:  #c8323c;   /* Nordic red accent */
-        --pine:    #2d5a4c;   /* secondary accent */
-
-        --paper:   var(--snow);
-        --bg:      var(--snow);
-        --display: 'Iceland', sans-serif;
-        --body:    'Barlow', sans-serif;
-      }
-
-      body {
-        margin: 0;
-        font-family: var(--body);
-        color: var(--ink);
-        background: var(--snow);
-      }
-      h1, h2, h3, h4, h5, h6, .title {
-        font-family: var(--display);
-        letter-spacing: .05em;
-        font-weight: 400;
-      }
-      h1 { font-size: 3.5rem; text-align: center; }
-      h2 { font-size: 2.5rem; text-align: center; margin: 1.6rem 16px .6rem; }
-
-      /* ---------- Masthead ---------- */
-      .masthead {
-        background:
-          radial-gradient(1200px 300px at 50% -40%, rgba(156, 195, 222, .35), transparent 70%),
-          linear-gradient(180deg, var(--night), var(--ink));
-        color: var(--snow);
-        position: relative;
-        padding: 2.4rem 16px 4.5rem;
-        text-align: center;
-      }
-      .masthead-inner { max-width: 760px; margin: 0 auto; position: relative; z-index: 1; }
-      .eyebrow {
-        margin: 0 0 .4rem;
-        font-size: .78rem;
-        letter-spacing: .22em;
-        text-transform: uppercase;
-        color: var(--glacier);
-      }
-      .masthead h1 {
-        font: 400 clamp(2.1rem, 6.5vw, 3.8rem)/1.05 var(--display);
-        margin: 0;
-        letter-spacing: .04em;
-        text-shadow: 0 2px 0 rgba(0, 0, 0, .3);
-      }
-      .masthead h1::before, .masthead h1::after {
-        content: "\2744\FE0E";   /* ❄ */
-        font-size: .45em;
-        vertical-align: middle;
-        margin: 0 .6em;
-        color: var(--lingon);
-      }
-      .tagline { margin: .8rem auto 0; max-width: 34rem; opacity: .85; }
-      .ridgeline {
-        position: absolute; left: 0; right: 0; bottom: -1px;
-        width: 100%; height: 70px;
-        fill: var(--bg);
-      }
-
-      /* Nordic-sweater band under the masthead */
-      .sweater-band {
-        height: 14px;
-        background:
-          linear-gradient(135deg, var(--lingon) 25%, transparent 25%) -7px 0 / 14px 14px,
-          linear-gradient(225deg, var(--lingon) 25%, transparent 25%) -7px 0 / 14px 14px,
-          linear-gradient(315deg, var(--lingon) 25%, transparent 25%) 0 0 / 14px 14px,
-          linear-gradient(45deg,  var(--lingon) 25%, transparent 25%) 0 0 / 14px 14px,
-          var(--snow);
-        border-top: 3px solid var(--lingon);
-        border-bottom: 3px solid var(--lingon);
-        margin: 0 0 18px;
-      }
-
-      /* ---------- Map ---------- */
-      #map {
-        height: 450px;
-        max-width: 1100px;
-        margin: 0 auto;
-        border: 2px solid var(--ink);
-        border-radius: 8px;
-        box-shadow: 0 4px 16px rgba(15, 33, 54, .18);
-      }
-      .leaflet-container { background: var(--frost); font-family: var(--body); }
-      .shade-tint { filter: contrast(0.6) url(#alpine-tint); }
-
-      .leaflet-control-layers,
-      .leaflet-bar a {
-        background: var(--snow);
-        color: var(--ink);
-        border-color: var(--ink);
-      }
-      .leaflet-tooltip {
-        background: var(--ink);
-        color: var(--snow);
-        border: none;
-        font-family: var(--body);
-        font-weight: 500;
-      }
-      .leaflet-tooltip-top:before    { border-top-color: var(--ink); }
-      .leaflet-tooltip-bottom:before { border-bottom-color: var(--ink); }
-      .leaflet-tooltip-left:before   { border-left-color: var(--ink); }
-      .leaflet-tooltip-right:before  { border-right-color: var(--ink); }
-
-      .range-label span {
-        display: block;
-        transform: translate(-50%, -50%);
-        white-space: nowrap;
-        font-family: var(--display);
-        font-size: 18px;
-        letter-spacing: .15em;
-        text-transform: uppercase;
-        color: var(--ink);
-        text-shadow: 0 0 3px var(--snow), 0 0 3px var(--snow), 0 0 6px var(--snow);
-      }
-      .town-label span {
-        display: block;
-        transform: translate(-50%, -50%);
-        white-space: nowrap;
-        font-family: var(--body);
-        font-weight: 700;
-        font-size: 12px;
-        letter-spacing: .15em;
-        text-transform: uppercase;
-        color: var(--lingon);
-        text-shadow: 0 0 3px #fff, 0 0 3px #fff;
-      }
-
-      .station-flake {
-        font-size: 32px;
-        line-height: 32px;
-        text-align: center;
-        color: var(--ink);
-        text-shadow: 0 0 3px #fff, 0 0 3px #fff, 0 0 6px #fff;
-        cursor: pointer;
-        transition: transform .15s ease;
-      }
-      .station-flake:hover { transform: scale(1.15); }
-
-      /* Make the winning snowflake stand out on the map */
-      .station-flake.deepest {
-        color: var(--lingon);
-        font-size: 40px;
-        text-shadow: 0 0 3px #fff, 0 0 3px #fff, 0 0 8px #fff;
-      }
-
-      /* ---------- Deepest-snow card ---------- */
-      .deepest-card {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 2px;
-        padding: 10px 16px;
-        background: var(--snow);
-        color: var(--ink);
-        border: 2px solid var(--ink);
-        border-top: 6px solid var(--lingon);
-        border-radius: 6px;
-        box-shadow: 0 2px 10px rgba(15, 33, 54, .25);
-        font: 14px var(--body);   /* buttons don't inherit fonts */
-        text-align: left;
-        cursor: pointer;
-      }
-      .deepest-card:hover { background: #fff; }
-      .deepest-card .label {
-        font-family: var(--display);
-        text-transform: uppercase;
-        letter-spacing: .15em;
-        color: var(--lingon);
-      }
-      .deepest-card .depth {
-        font-family: var(--display);
-        font-size: 44px;
-        line-height: 1;
-      }
-      .deepest-card .depth small { font-size: 20px; }
-      .deepest-card .name { font-weight: 700; font-size: 16px; }
-      .deepest-card .date { font-size: 12px; opacity: .75; }
-
-      /* ---------- Station readout ---------- */
-      #current {
-        width: fit-content;
-        font-size: 1.1rem;
-        margin: 0 auto;
-      }
-      #current:not(:empty) {
-        background: var(--frost);
-        border-left: 5px solid var(--lingon);
-        border-radius: 6px;
-        padding: .4rem 1.4rem .8rem;
-      }
-      #current p {
-        margin: .4rem 0;
-        font-size: .8rem;
-        letter-spacing: .18em;
-        text-transform: uppercase;
-        color: var(--pine);
-      }
-      #current ul { list-style: none; margin: 0; padding: 0; }
-      #current li { padding: .2rem 0; }
-      #current li::before {
-        content: "\2744\FE0E";
-        color: var(--glacier);
-        margin-right: .55em;
-      }
-
-      #precip-chart { max-width: 1100px; margin: 1rem auto 2rem; }
-      #precip-chart:not(:empty) {
-        background: var(--frost);
-        border-left: 5px solid var(--lingon);
-        border-radius: 6px;
-        padding: .5rem;
-      }
-
-      @media (max-width: 600px) {
-        .content { margin: 0 12px; }
-
-        h1 { font-size: 2.2rem; margin: 16px 0 8px; }
-        h2 { font-size: 1.5rem; }
-
-        #map { height: 60vh; }   /* most of the screen, leaving room to scroll past */
-
-        #current { font-size: 1rem; }
-
-        .range-label span { font-size: 12px; letter-spacing: .1em; }
-
-        .deepest-card { padding: 6px 10px; }
-        .deepest-card .depth { font-size: 32px; }
-        .deepest-card .name { font-size: 14px; }
-      }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <!-- Tints the hillshade from fjord blue (shadows) to snow white (highlights) -->
@@ -280,8 +41,21 @@
     <div id="precip-chart"></div>
   </main>
 
+  <footer class="disclaimer">
+  <p>
+    Snow data from the
+    <a href="https://www.nrcs.usda.gov/wps/portal/wcc/home/" target="_blank" rel="noopener">USDA NRCS SNOTEL network</a>
+    via AWDB. Readings are provisional, may contain sensor errors, and are subject to revision.
+    Each station reflects conditions at a single point and may not represent nearby terrain.
+    For general reference only. This is not a substitute for avalanche forecasts or field judgment.
+    Before heading into the backcountry, check the
+    <a href="https://www.mtavalanche.com" target="_blank" rel="noopener">Gallatin National Forest Avalanche Center</a>.
+  </p>
+</footer>
+
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
   <script src="assets/app.js"></script>
 </body>
+
 </html>
